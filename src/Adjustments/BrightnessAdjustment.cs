@@ -6,7 +6,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
     {
         private new HomeAssistantByBatuPlugin Plugin => (HomeAssistantByBatuPlugin)base.Plugin;
 
-        private const Int32 BrightnessStep = 10;
+        private AdjustmentDebouncer<Int32> _debouncer;
 
         public BrightnessAdjustment()
             : base(hasReset: true)
@@ -16,6 +16,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
 
         protected override Boolean OnLoad()
         {
+            _debouncer = new AdjustmentDebouncer<Int32>(this.FlushBrightness, 120);
             this.Plugin.HaStatesLoaded += this.OnStatesLoaded;
             this.Plugin.EntityStateChanged += this.OnEntityStateChanged;
             return true;
@@ -25,6 +26,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
         {
             this.Plugin.HaStatesLoaded -= this.OnStatesLoaded;
             this.Plugin.EntityStateChanged -= this.OnEntityStateChanged;
+            _debouncer?.Dispose();
             return true;
         }
 
@@ -59,21 +61,36 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return;
             }
 
-            var currentPct = entity.GetBrightnessPercent();
-            var newPct = Math.Clamp(currentPct + (diff * BrightnessStep), 0, 100);
+            var currentPct = _debouncer.TryGetPending(actionParameter, out var pending)
+                ? pending
+                : entity.GetBrightnessPercent();
 
-            if (newPct == 0)
+            var step = Math.Abs(diff) > 1 ? 5 : 3;
+
+            _debouncer.Accumulate(actionParameter, currentPct,
+                val => Math.Clamp(val + (diff * step), 0, 100));
+
+            this.AdjustmentValueChanged(actionParameter);
+            this.ActionImageChanged(actionParameter);
+        }
+
+        private void FlushBrightness(String entityId, Int32 targetPct)
+        {
+            if (this.Plugin.HaClient == null)
             {
-                this.Plugin.HaClient.CallServiceAsync("light", "turn_off", actionParameter);
+                return;
+            }
+
+            if (targetPct <= 0)
+            {
+                this.Plugin.HaClient.CallServiceAsync("light", "turn_off", entityId);
             }
             else
             {
-                var brightness = (Int32)Math.Round(newPct / 100.0 * 255);
-                this.Plugin.HaClient.CallServiceAsync("light", "turn_on", actionParameter,
-                    new { brightness });
+                var brightness = (Int32)Math.Round(targetPct / 100.0 * 255);
+                this.Plugin.HaClient.CallServiceAsync("light", "turn_on", entityId,
+                    new { brightness, transition = 0.3 });
             }
-
-            this.AdjustmentValueChanged(actionParameter);
         }
 
         protected override void RunCommand(String actionParameter)
@@ -92,6 +109,11 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
             if (String.IsNullOrEmpty(actionParameter))
             {
                 return "";
+            }
+
+            if (_debouncer != null && _debouncer.TryGetPending(actionParameter, out var pending))
+            {
+                return pending <= 0 ? "OFF" : $"{pending}%";
             }
 
             var entity = this.Plugin.HaClient?.GetEntity(actionParameter);
@@ -116,8 +138,21 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return IconHelper.CreateOfflineImage(imageSize);
             }
 
-            var valueText = entity.IsOn ? $"{entity.GetBrightnessPercent()}%" : "OFF";
-            return IconHelper.CreateAdjustmentImage(imageSize, entity.FriendlyName, valueText, entity.IsOn);
+            String valueText;
+            Boolean isOn;
+
+            if (_debouncer != null && _debouncer.TryGetPending(actionParameter, out var pending))
+            {
+                isOn = pending > 0;
+                valueText = pending <= 0 ? "OFF" : $"{pending}%";
+            }
+            else
+            {
+                isOn = entity.IsOn;
+                valueText = isOn ? $"{entity.GetBrightnessPercent()}%" : "OFF";
+            }
+
+            return IconHelper.CreateAdjustmentImage(imageSize, entity.FriendlyName, valueText, isOn);
         }
 
         private void OnEntityStateChanged(Object sender, HaStateChangedEventArgs e)

@@ -75,6 +75,52 @@ namespace Loupedeck.HomeAssistantByBatuPlugin
             return builder.ToImage();
         }
 
+        public static BitmapImage CreateColorTempImage(
+            PluginImageSize imageSize,
+            String displayText,
+            String valueText,
+            Boolean isOn,
+            Double warmthFactor)
+        {
+            using var builder = new BitmapBuilder(imageSize);
+
+            BitmapColor bgColor;
+            if (!isOn)
+            {
+                bgColor = new BitmapColor(60, 60, 60);
+            }
+            else
+            {
+                var r = (Int32)(180 + 75 * warmthFactor);
+                var g = (Int32)(160 + 50 * (1 - warmthFactor));
+                var b = (Int32)(80 + 175 * (1 - warmthFactor));
+                bgColor = new BitmapColor(
+                    Math.Min(r, 255),
+                    Math.Min(g, 255),
+                    Math.Min(b, 255));
+            }
+
+            builder.Clear(bgColor);
+
+            var textColor = isOn ? BitmapColor.Black : BitmapColor.White;
+
+            var truncatedName = displayText?.Length > 14
+                ? displayText.Substring(0, 12) + ".."
+                : displayText;
+
+            builder.DrawText(truncatedName ?? "", 2, 8, builder.Width - 4, 24, textColor);
+
+            if (!String.IsNullOrEmpty(valueText))
+            {
+                var valueColor = isOn
+                    ? new BitmapColor(40, 40, 40)
+                    : new BitmapColor(255, 255, 100);
+                builder.DrawText(valueText, 2, 34, builder.Width - 4, 28, valueColor, 16);
+            }
+
+            return builder.ToImage();
+        }
+
         public static BitmapImage CreateOfflineImage(PluginImageSize imageSize)
         {
             using var builder = new BitmapBuilder(imageSize);

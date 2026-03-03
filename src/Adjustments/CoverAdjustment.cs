@@ -6,7 +6,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
     {
         private new HomeAssistantByBatuPlugin Plugin => (HomeAssistantByBatuPlugin)base.Plugin;
 
-        private const Int32 PositionStep = 10;
+        private AdjustmentDebouncer<Int32> _debouncer;
 
         public CoverAdjustment()
             : base(hasReset: true)
@@ -16,6 +16,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
 
         protected override Boolean OnLoad()
         {
+            _debouncer = new AdjustmentDebouncer<Int32>(this.FlushPosition, 200);
             this.Plugin.HaStatesLoaded += this.OnStatesLoaded;
             this.Plugin.EntityStateChanged += this.OnEntityStateChanged;
             return true;
@@ -25,6 +26,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
         {
             this.Plugin.HaStatesLoaded -= this.OnStatesLoaded;
             this.Plugin.EntityStateChanged -= this.OnEntityStateChanged;
+            _debouncer?.Dispose();
             return true;
         }
 
@@ -59,13 +61,21 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return;
             }
 
-            var currentPos = entity.GetPosition();
-            var newPos = Math.Clamp(currentPos + (diff * PositionStep), 0, 100);
+            var currentPos = _debouncer.TryGetPending(actionParameter, out var pending)
+                ? pending
+                : entity.GetPosition();
 
-            this.Plugin.HaClient.CallServiceAsync("cover", "set_cover_position", actionParameter,
-                new { position = newPos });
+            _debouncer.Accumulate(actionParameter, currentPos,
+                val => Math.Clamp(val + (diff * 5), 0, 100));
 
             this.AdjustmentValueChanged(actionParameter);
+            this.ActionImageChanged(actionParameter);
+        }
+
+        private void FlushPosition(String entityId, Int32 position)
+        {
+            this.Plugin.HaClient?.CallServiceAsync("cover", "set_cover_position", entityId,
+                new { position });
         }
 
         protected override void RunCommand(String actionParameter)
@@ -99,7 +109,11 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return "";
             }
 
-            return $"{entity.GetPosition()}%";
+            var pos = _debouncer != null && _debouncer.TryGetPending(actionParameter, out var pending)
+                ? pending
+                : entity.GetPosition();
+
+            return $"{pos}%";
         }
 
         protected override BitmapImage GetCommandImage(String actionParameter, PluginImageSize imageSize)
@@ -115,9 +129,12 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return IconHelper.CreateOfflineImage(imageSize);
             }
 
+            var pos = _debouncer != null && _debouncer.TryGetPending(actionParameter, out var pending)
+                ? pending
+                : entity.GetPosition();
+
             var isOpen = entity.State == "open";
-            var valueText = $"{entity.GetPosition()}%";
-            return IconHelper.CreateAdjustmentImage(imageSize, entity.FriendlyName, valueText, isOpen);
+            return IconHelper.CreateAdjustmentImage(imageSize, entity.FriendlyName, $"{pos}%", isOpen);
         }
 
         private void OnEntityStateChanged(Object sender, HaStateChangedEventArgs e)

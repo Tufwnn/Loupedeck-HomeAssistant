@@ -1,15 +1,14 @@
 namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
 {
     using System;
-    using System.Text.Json;
 
-    public class MediaVolumeAdjustment : PluginDynamicAdjustment
+    public class ColorTempAdjustment : PluginDynamicAdjustment
     {
         private new HomeAssistantByBatuPlugin Plugin => (HomeAssistantByBatuPlugin)base.Plugin;
 
-        private AdjustmentDebouncer<Double> _debouncer;
+        private AdjustmentDebouncer<Int32> _debouncer;
 
-        public MediaVolumeAdjustment()
+        public ColorTempAdjustment()
             : base(hasReset: true)
         {
             this.IsWidget = true;
@@ -17,7 +16,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
 
         protected override Boolean OnLoad()
         {
-            _debouncer = new AdjustmentDebouncer<Double>(this.FlushVolume, 120);
+            _debouncer = new AdjustmentDebouncer<Int32>(this.FlushColorTemp, 120);
             this.Plugin.HaStatesLoaded += this.OnStatesLoaded;
             this.Plugin.EntityStateChanged += this.OnEntityStateChanged;
             return true;
@@ -40,10 +39,13 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return;
             }
 
-            var entities = this.Plugin.HaClient.GetEntitiesByDomain("media_player");
+            var entities = this.Plugin.HaClient.GetEntitiesByDomain("light");
             foreach (var entity in entities)
             {
-                this.AddParameter(entity.EntityId, entity.FriendlyName, "Media###Volume");
+                if (entity.SupportsColorTemp())
+                {
+                    this.AddParameter(entity.EntityId, entity.FriendlyName, "Color Temp");
+                }
             }
 
             this.ParametersChanged();
@@ -62,21 +64,35 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return;
             }
 
-            var currentVolume = _debouncer.TryGetPending(actionParameter, out var pending)
-                ? pending
-                : GetVolumeLevel(entity);
+            var (min, max) = entity.GetColorTempRange();
+            var range = max - min;
+            var step = Math.Max(1, range / 30);
 
-            _debouncer.Accumulate(actionParameter, currentVolume,
-                val => Math.Clamp(val + (diff * 0.03), 0.0, 1.0));
+            var currentMireds = _debouncer.TryGetPending(actionParameter, out var pending)
+                ? pending
+                : entity.GetColorTemp();
+
+            if (currentMireds <= 0)
+            {
+                currentMireds = (min + max) / 2;
+            }
+
+            _debouncer.Accumulate(actionParameter, currentMireds,
+                val => Math.Clamp(val + (diff * step), min, max));
 
             this.AdjustmentValueChanged(actionParameter);
             this.ActionImageChanged(actionParameter);
         }
 
-        private void FlushVolume(String entityId, Double volume)
+        private void FlushColorTemp(String entityId, Int32 mireds)
         {
-            this.Plugin.HaClient?.CallServiceAsync("media_player", "volume_set", entityId,
-                new { volume_level = volume });
+            if (this.Plugin.HaClient == null)
+            {
+                return;
+            }
+
+            this.Plugin.HaClient.CallServiceAsync("light", "turn_on", entityId,
+                new { color_temp = mireds, transition = 0.3 });
         }
 
         protected override void RunCommand(String actionParameter)
@@ -86,8 +102,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return;
             }
 
-            this.Plugin.HaClient.CallServiceAsync("media_player", "volume_mute", actionParameter,
-                new { is_volume_muted = true });
+            this.Plugin.HaClient.CallServiceAsync("light", "toggle", actionParameter);
             this.ActionImageChanged(actionParameter);
         }
 
@@ -99,16 +114,12 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
             }
 
             var entity = this.Plugin.HaClient?.GetEntity(actionParameter);
-            if (entity == null)
+            if (entity == null || !entity.IsOn)
             {
-                return "";
+                return "OFF";
             }
 
-            var vol = _debouncer != null && _debouncer.TryGetPending(actionParameter, out var pending)
-                ? pending
-                : GetVolumeLevel(entity);
-
-            return $"{(Int32)(vol * 100)}%";
+            return FormatColorTemp(actionParameter, entity);
         }
 
         protected override BitmapImage GetCommandImage(String actionParameter, PluginImageSize imageSize)
@@ -124,33 +135,63 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return IconHelper.CreateOfflineImage(imageSize);
             }
 
-            var vol = _debouncer != null && _debouncer.TryGetPending(actionParameter, out var pending)
-                ? pending
-                : GetVolumeLevel(entity);
+            var isOn = entity.IsOn;
+            var valueText = isOn ? FormatColorTemp(actionParameter, entity) : "OFF";
 
-            var isOn = entity.State != "off" && entity.State != "unavailable";
-            var valueText = $"Vol: {(Int32)(vol * 100)}%";
-
-            return IconHelper.CreateAdjustmentImage(imageSize, entity.FriendlyName, valueText, isOn);
+            return IconHelper.CreateColorTempImage(imageSize, entity.FriendlyName, valueText, isOn,
+                GetWarmthFactor(actionParameter, entity));
         }
 
-        private static Double GetVolumeLevel(HaEntity entity)
+        private String FormatColorTemp(String entityId, HaEntity entity)
         {
-            try
+            Int32 mireds;
+            if (_debouncer != null && _debouncer.TryGetPending(entityId, out var pending))
             {
-                if (entity.Attributes.ValueKind == JsonValueKind.Object &&
-                    entity.Attributes.TryGetProperty("volume_level", out var v))
-                {
-                    return v.GetDouble();
-                }
+                mireds = pending;
             }
-            catch { }
-            return 0;
+            else
+            {
+                mireds = entity.GetColorTemp();
+            }
+
+            if (mireds <= 0)
+            {
+                return "--";
+            }
+
+            var kelvin = (Int32)Math.Round(1000000.0 / mireds);
+            return $"{kelvin}K";
+        }
+
+        private Double GetWarmthFactor(String entityId, HaEntity entity)
+        {
+            Int32 mireds;
+            if (_debouncer != null && _debouncer.TryGetPending(entityId, out var pending))
+            {
+                mireds = pending;
+            }
+            else
+            {
+                mireds = entity.GetColorTemp();
+            }
+
+            if (mireds <= 0)
+            {
+                return 0.5;
+            }
+
+            var (min, max) = entity.GetColorTempRange();
+            if (max <= min)
+            {
+                return 0.5;
+            }
+
+            return Math.Clamp((mireds - min) / (Double)(max - min), 0, 1);
         }
 
         private void OnEntityStateChanged(Object sender, HaStateChangedEventArgs e)
         {
-            if (e.NewState?.Domain == "media_player")
+            if (e.NewState?.Domain == "light")
             {
                 this.AdjustmentValueChanged(e.EntityId);
                 this.ActionImageChanged(e.EntityId);

@@ -6,7 +6,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
     {
         private new HomeAssistantByBatuPlugin Plugin => (HomeAssistantByBatuPlugin)base.Plugin;
 
-        private const Double TemperatureStep = 0.5;
+        private AdjustmentDebouncer<Double> _debouncer;
 
         public ClimateAdjustment()
             : base(hasReset: false)
@@ -16,6 +16,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
 
         protected override Boolean OnLoad()
         {
+            _debouncer = new AdjustmentDebouncer<Double>(this.FlushTemperature, 200);
             this.Plugin.HaStatesLoaded += this.OnStatesLoaded;
             this.Plugin.EntityStateChanged += this.OnEntityStateChanged;
             return true;
@@ -25,6 +26,7 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
         {
             this.Plugin.HaStatesLoaded -= this.OnStatesLoaded;
             this.Plugin.EntityStateChanged -= this.OnEntityStateChanged;
+            _debouncer?.Dispose();
             return true;
         }
 
@@ -59,13 +61,21 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return;
             }
 
-            var currentTemp = entity.GetTemperature();
-            var newTemp = currentTemp + (diff * TemperatureStep);
+            var currentTemp = _debouncer.TryGetPending(actionParameter, out var pending)
+                ? pending
+                : entity.GetTemperature();
 
-            this.Plugin.HaClient.CallServiceAsync("climate", "set_temperature", actionParameter,
-                new { temperature = newTemp });
+            _debouncer.Accumulate(actionParameter, currentTemp,
+                val => val + (diff * 0.5));
 
             this.AdjustmentValueChanged(actionParameter);
+            this.ActionImageChanged(actionParameter);
+        }
+
+        private void FlushTemperature(String entityId, Double temperature)
+        {
+            this.Plugin.HaClient?.CallServiceAsync("climate", "set_temperature", entityId,
+                new { temperature });
         }
 
         protected override void RunCommand(String actionParameter)
@@ -99,7 +109,10 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
                 return "";
             }
 
-            var temp = entity.GetTemperature();
+            var temp = _debouncer != null && _debouncer.TryGetPending(actionParameter, out var pending)
+                ? pending
+                : entity.GetTemperature();
+
             return temp > 0 ? $"{temp:F1}\u00B0" : entity.State;
         }
 
@@ -117,9 +130,12 @@ namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
             }
 
             var isOn = entity.State != "off";
-            var temp = entity.GetTemperature();
-            var valueText = temp > 0 ? $"{temp:F1}\u00B0" : entity.State;
 
+            var temp = _debouncer != null && _debouncer.TryGetPending(actionParameter, out var pending)
+                ? pending
+                : entity.GetTemperature();
+
+            var valueText = temp > 0 ? $"{temp:F1}\u00B0" : entity.State;
             return IconHelper.CreateAdjustmentImage(imageSize, entity.FriendlyName, valueText, isOn);
         }
 

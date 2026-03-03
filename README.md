@@ -99,10 +99,13 @@ With this content:
 
 | Entity Type | Rotate | Press |
 |---|---|---|
-| **Lights (dimmable)** | Brightness ±10% | Toggle on/off |
-| **Covers** | Position ±10% | Open / Close |
-| **Climate** | Temperature ±0.5° | Toggle on/off |
-| **Media Players** | Volume ±5% | Mute |
+| **Lights — Brightness** | Brightness ±3% (smooth debounced) | Toggle on/off |
+| **Lights — Color Temp** | Warm ↔ Cool (smooth debounced) | Toggle on/off |
+| **Covers** | Position ±5% (debounced) | Open / Close |
+| **Climate** | Temperature ±0.5° (debounced) | Toggle on/off |
+| **Media Players** | Volume ±3% (debounced) | Mute |
+
+All encoder adjustments use **debounced control** — rapid dial turns are accumulated and sent as a single smooth command, eliminating lag and stutter.
 
 ---
 
@@ -151,13 +154,15 @@ src/
 │   └── ConnectionStatusCommand.cs
 ├── Adjustments/                  # Dial/encoder actions
 │   ├── BrightnessAdjustment.cs
+│   ├── ColorTempAdjustment.cs
 │   ├── CoverAdjustment.cs
 │   ├── ClimateAdjustment.cs
 │   └── MediaVolumeAdjustment.cs
 └── Helpers/
     ├── PluginLog.cs
     ├── PluginResources.cs
-    └── IconHelper.cs
+    ├── IconHelper.cs
+    └── AdjustmentDebouncer.cs
 ```
 
 ### Creating a Release
