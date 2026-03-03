@@ -1,8 +1,8 @@
-namespace Loupedeck.HomeAssistantPlugin
+namespace Loupedeck.HomeAssistantByBatuPlugin
 {
     using System;
 
-    public class HomeAssistantPlugin : Plugin
+    public class HomeAssistantByBatuPlugin : Plugin
     {
         public override Boolean UsesApplicationApiOnly => true;
         public override Boolean HasNoApplication => true;
@@ -12,7 +12,7 @@ namespace Loupedeck.HomeAssistantPlugin
         internal Boolean IsConfigured => this.Config != null;
         internal Boolean IsReady => this.HaClient?.IsConnected == true && this.HaClient?.States.Count > 0;
 
-        public HomeAssistantPlugin()
+        public HomeAssistantByBatuPlugin()
         {
             PluginLog.Init(this.Log);
             PluginResources.Init(this.Assembly);

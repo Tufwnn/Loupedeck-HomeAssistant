@@ -1,9 +1,9 @@
 $pluginsDir = "$env:LOCALAPPDATA\Logi\LogiPluginService\Plugins"
 $pluginName = "HomeAssistantByBatu"
-$lplug4 = Join-Path $PSScriptRoot "output\HomeAssistantPlugin.lplug4"
+$lplug4 = Join-Path $PSScriptRoot "output\HomeAssistantByBatuPlugin.lplug4"
 
 if (-not (Test-Path $lplug4)) {
-    Write-Host "ERROR: $lplug4 not found. Run 'dotnet build src\HomeAssistantPlugin.csproj -c Release' first." -ForegroundColor Red
+    Write-Host "ERROR: $lplug4 not found. Run 'dotnet build src\HomeAssistantByBatuPlugin.csproj -c Release' first." -ForegroundColor Red
     pause
     exit 1
 }
@@ -19,13 +19,13 @@ foreach ($name in $oldNames) {
         Remove-Item -Recurse -Force $path
     }
 }
-$linkFile = Join-Path $pluginsDir "HomeAssistantPlugin.link"
+$linkFile = Join-Path $pluginsDir "HomeAssistantByBatuPlugin.link"
 if (Test-Path $linkFile) {
     Remove-Item -Force $linkFile
 }
 
 # Copy as .zip for Expand-Archive compatibility
-$tempZip = Join-Path $env:TEMP "HomeAssistantPlugin.zip"
+$tempZip = Join-Path $env:TEMP "HomeAssistantByBatuPlugin.zip"
 Copy-Item $lplug4 $tempZip -Force
 
 # Extract new plugin

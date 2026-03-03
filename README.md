@@ -14,7 +14,7 @@ Real-time WebSocket connection — entity states update on your device instantly
 
 ### Step 1 — Download
 
-Go to [**Releases**](https://github.com/Batushn/Loupedeck-HomeAssistant/releases/latest) and download `HomeAssistantPlugin.lplug4`.
+Go to [**Releases**](https://github.com/Batushn/Loupedeck-HomeAssistant/releases/latest) and download `HomeAssistantByBatuPlugin.lplug4`.
 
 ### Step 2 — Install the plugin
 
@@ -121,10 +121,10 @@ git clone https://github.com/Batushn/Loupedeck-HomeAssistant.git
 cd Loupedeck-HomeAssistant
 
 # Debug build — auto-creates .link file for hot reload
-dotnet build src/HomeAssistantPlugin.csproj
+dotnet build src/HomeAssistantByBatuPlugin.csproj
 
 # Release build — produces .lplug4 in output/
-dotnet build src/HomeAssistantPlugin.csproj -c Release
+dotnet build src/HomeAssistantByBatuPlugin.csproj -c Release
 ```
 
 Or just double-click `build.bat` on Windows.
@@ -133,7 +133,7 @@ Or just double-click `build.bat` on Windows.
 
 ```
 src/
-├── HomeAssistantPlugin.cs        # Plugin entry point & lifecycle
+├── HomeAssistantByBatuPlugin.cs   # Plugin entry point & lifecycle
 ├── HomeAssistantApplication.cs   # Application class (required by SDK)
 ├── Models/
 │   ├── PluginConfig.cs           # Config loading (homeassistant.json)

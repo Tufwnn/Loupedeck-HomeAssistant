@@ -6,7 +6,7 @@ version: 1.1.0
 author: Batuhan Sahin
 copyright: Copyright (c) 2026 Batuhan Sahin
 
-pluginFileName: HomeAssistantPlugin.dll
+pluginFileName: HomeAssistantByBatuPlugin.dll
 pluginFolderWin: bin
 
 supportedDevices:

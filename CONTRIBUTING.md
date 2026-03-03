@@ -27,7 +27,7 @@ See the [README](README.md) for build instructions.
 ```bash
 git clone https://github.com/YOUR_USERNAME/Loupedeck-HomeAssistant.git
 cd Loupedeck-HomeAssistant
-dotnet build src/HomeAssistantPlugin.csproj
+dotnet build src/HomeAssistantByBatuPlugin.csproj
 ```
 
 Debug builds auto-create a `.link` file so the Logi Plugin Service loads directly from your build output.

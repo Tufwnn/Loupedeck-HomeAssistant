@@ -4,7 +4,7 @@ echo  Home Assistant Plugin - Release Build
 echo ========================================
 echo.
 cd /d "%~dp0"
-dotnet build src\HomeAssistantPlugin.csproj -c Release
+dotnet build src\HomeAssistantByBatuPlugin.csproj -c Release
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo BUILD FAILED!

@@ -1,10 +1,10 @@
-namespace Loupedeck.HomeAssistantPlugin.Commands
+namespace Loupedeck.HomeAssistantByBatuPlugin.Commands
 {
     using System;
 
     public class ConnectionStatusCommand : PluginDynamicCommand
     {
-        private new HomeAssistantPlugin Plugin => (HomeAssistantPlugin)base.Plugin;
+        private new HomeAssistantByBatuPlugin Plugin => (HomeAssistantByBatuPlugin)base.Plugin;
 
         public ConnectionStatusCommand()
             : base("Connection Status", "Shows Home Assistant connection status", "Status")

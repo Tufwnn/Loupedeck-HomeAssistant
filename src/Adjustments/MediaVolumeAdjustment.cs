@@ -1,11 +1,11 @@
-namespace Loupedeck.HomeAssistantPlugin.Adjustments
+namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
 {
     using System;
     using System.Text.Json;
 
     public class MediaVolumeAdjustment : PluginDynamicAdjustment
     {
-        private new HomeAssistantPlugin Plugin => (HomeAssistantPlugin)base.Plugin;
+        private new HomeAssistantByBatuPlugin Plugin => (HomeAssistantByBatuPlugin)base.Plugin;
 
         private const Double VolumeStep = 0.05;
 

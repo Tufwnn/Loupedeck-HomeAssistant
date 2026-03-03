@@ -1,10 +1,10 @@
-namespace Loupedeck.HomeAssistantPlugin.Adjustments
+namespace Loupedeck.HomeAssistantByBatuPlugin.Adjustments
 {
     using System;
 
     public class BrightnessAdjustment : PluginDynamicAdjustment
     {
-        private new HomeAssistantPlugin Plugin => (HomeAssistantPlugin)base.Plugin;
+        private new HomeAssistantByBatuPlugin Plugin => (HomeAssistantByBatuPlugin)base.Plugin;
 
         private const Int32 BrightnessStep = 10;
 

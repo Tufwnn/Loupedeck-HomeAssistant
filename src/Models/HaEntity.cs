@@ -1,4 +1,4 @@
-namespace Loupedeck.HomeAssistantPlugin
+namespace Loupedeck.HomeAssistantByBatuPlugin
 {
     using System;
     using System.Collections.Generic;

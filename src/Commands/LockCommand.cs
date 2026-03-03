@@ -1,10 +1,10 @@
-namespace Loupedeck.HomeAssistantPlugin.Commands
+namespace Loupedeck.HomeAssistantByBatuPlugin.Commands
 {
     using System;
 
     public class LockCommand : PluginDynamicCommand
     {
-        private new HomeAssistantPlugin Plugin => (HomeAssistantPlugin)base.Plugin;
+        private new HomeAssistantByBatuPlugin Plugin => (HomeAssistantByBatuPlugin)base.Plugin;
 
         public LockCommand()
             : base()

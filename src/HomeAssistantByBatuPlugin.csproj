@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <RootNamespace>Loupedeck.HomeAssistantPlugin</RootNamespace>
+    <RootNamespace>Loupedeck.HomeAssistantByBatuPlugin</RootNamespace>
 
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -76,11 +76,11 @@
 
     <MakeDir Directories="$(PackageOutputDir)" />
 
-    <Exec Command="powershell -NoProfile -Command &quot;if (Test-Path '$(PackageOutputDir)HomeAssistantPlugin.lplug4') { Remove-Item '$(PackageOutputDir)HomeAssistantPlugin.lplug4' -Force }; Compress-Archive -Path '$(PackageStagingDir)*' -DestinationPath '$(PackageOutputDir)HomeAssistantPlugin.zip' -Force; Rename-Item -Path '$(PackageOutputDir)HomeAssistantPlugin.zip' -NewName 'HomeAssistantPlugin.lplug4'&quot;" />
+    <Exec Command="powershell -NoProfile -Command &quot;if (Test-Path '$(PackageOutputDir)HomeAssistantByBatuPlugin.lplug4') { Remove-Item '$(PackageOutputDir)HomeAssistantByBatuPlugin.lplug4' -Force }; Compress-Archive -Path '$(PackageStagingDir)*' -DestinationPath '$(PackageOutputDir)HomeAssistantByBatuPlugin.zip' -Force; Rename-Item -Path '$(PackageOutputDir)HomeAssistantByBatuPlugin.zip' -NewName 'HomeAssistantByBatuPlugin.lplug4'&quot;" />
 
     <Message Importance="high" Text="&#10;========================================" />
     <Message Importance="high" Text="  Plugin package created!" />
-    <Message Importance="high" Text="  $(PackageOutputDir)HomeAssistantPlugin.lplug4" />
+    <Message Importance="high" Text="  $(PackageOutputDir)HomeAssistantByBatuPlugin.lplug4" />
     <Message Importance="high" Text="========================================&#10;" />
 
   </Target>

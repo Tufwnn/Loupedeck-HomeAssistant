@@ -1,11 +1,11 @@
-namespace Loupedeck.HomeAssistantPlugin.Commands
+namespace Loupedeck.HomeAssistantByBatuPlugin.Commands
 {
     using System;
     using System.Linq;
 
     public class ToggleEntityCommand : PluginDynamicCommand
     {
-        private new HomeAssistantPlugin Plugin => (HomeAssistantPlugin)base.Plugin;
+        private new HomeAssistantByBatuPlugin Plugin => (HomeAssistantByBatuPlugin)base.Plugin;
 
         private static readonly String[] SupportedDomains = new[]
         {
