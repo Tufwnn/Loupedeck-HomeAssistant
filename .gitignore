@@ -1,0 +1,44 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstats
+
+## VS / Rider
+.vs/
+.idea/
+*.DotSettings.user
+
+## Build
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+
+## Plugin output
+output/
+package_output/
+*.lplug4
+
+## Secrets & config — NEVER commit real tokens
+homeassistant.json
+*.env
+.env.*
+credentials.json
+secrets.json
+
+## OS junk
+Thumbs.db
+.DS_Store
+desktop.ini
+
+## Temp scripts
+*.tmp
+*.bak

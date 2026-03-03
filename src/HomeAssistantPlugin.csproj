@@ -1,0 +1,94 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <RootNamespace>Loupedeck.HomeAssistantPlugin</RootNamespace>
+
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>CS4014</NoWarn>
+
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <PluginApiDir Condition="$(OS) == 'Windows_NT'">C:\Program Files\Logi\LogiPluginService\</PluginApiDir>
+    <PluginApiDir Condition="$(OS) != 'Windows_NT'">/Applications/Utilities/LogiPluginService.app/Contents/MonoBundle/</PluginApiDir>
+
+    <PluginDir Condition="$(OS) == 'Windows_NT'">$(LocalAppData)\Logi\LogiPluginService\Plugins\</PluginDir>
+    <PluginDir Condition="$(OS) != 'Windows_NT'">~/Library/Application\ Support/Logi/LogiPluginService/Plugins/</PluginDir>
+
+    <BaseOutputPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\bin\'))</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\bin\</OutputPath>
+
+    <PackageOutputDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\output\'))</PackageOutputDir>
+    <PackageStagingDir>$(BaseOutputPath)$(Configuration)\staging\</PackageStagingDir>
+
+    <PluginShortName>HomeAssistantByBatu</PluginShortName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\**\*" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PluginApiPath Condition="Exists('$(PluginApiDir)PluginApi.dll')">$(PluginApiDir)PluginApi.dll</PluginApiPath>
+    <PluginApiPath Condition="'$(PluginApiPath)' == '' AND Exists('$(MSBuildThisFileDirectory)..\lib\PluginApi.dll')">$(MSBuildThisFileDirectory)..\lib\PluginApi.dll</PluginApiPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="PluginApi">
+      <HintPath>$(PluginApiPath)</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="CopyPackage" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <PackageFiles Include="package\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(OutputPath)..\%(RecursiveDir)" />
+  </Target>
+
+  <!-- Dev: .link file + reload for Debug builds -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Debug'">
+    <Exec Condition="$(OS) == 'Windows_NT'" Command="echo $(BaseOutputPath)$(Configuration)\ &gt; &quot;$(PluginDir)$(ProjectName).link&quot;" />
+    <Exec Condition="$(OS) != 'Windows_NT'" Command="echo $(BaseOutputPath)$(Configuration)\ &gt; $(PluginDir)$(ProjectName).link" />
+    <Exec Condition="$(OS) == 'Windows_NT'" Command="start loupedeck:plugin/$(PluginShortName)/reload" ContinueOnError="true" />
+    <Exec Condition="$(OS) != 'Windows_NT'" Command="open loupedeck:plugin/$(PluginShortName)/reload" ContinueOnError="true" />
+  </Target>
+
+  <!-- Release: automatically produce .lplug4 installer package -->
+  <Target Name="CreateLplug4Package" AfterTargets="CopyPackage" Condition="'$(Configuration)' == 'Release'">
+
+    <RemoveDir Directories="$(PackageStagingDir)" />
+    <MakeDir Directories="$(PackageStagingDir)metadata" />
+    <MakeDir Directories="$(PackageStagingDir)bin" />
+
+    <Copy SourceFiles="package\metadata\LoupedeckPackage.yaml" DestinationFolder="$(PackageStagingDir)metadata\" />
+    <Copy SourceFiles="package\metadata\Icon256x256.png" DestinationFolder="$(PackageStagingDir)metadata\" Condition="Exists('package\metadata\Icon256x256.png')" />
+
+    <ItemGroup>
+      <PluginBinaries Include="$(OutputPath)*.dll" />
+      <PluginBinaries Include="$(OutputPath)*.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PluginBinaries)" DestinationFolder="$(PackageStagingDir)bin\" />
+
+    <MakeDir Directories="$(PackageOutputDir)" />
+
+    <Exec Command="powershell -NoProfile -Command &quot;if (Test-Path '$(PackageOutputDir)HomeAssistantPlugin.lplug4') { Remove-Item '$(PackageOutputDir)HomeAssistantPlugin.lplug4' -Force }; Compress-Archive -Path '$(PackageStagingDir)*' -DestinationPath '$(PackageOutputDir)HomeAssistantPlugin.zip' -Force; Rename-Item -Path '$(PackageOutputDir)HomeAssistantPlugin.zip' -NewName 'HomeAssistantPlugin.lplug4'&quot;" />
+
+    <Message Importance="high" Text="&#10;========================================" />
+    <Message Importance="high" Text="  Plugin package created!" />
+    <Message Importance="high" Text="  $(PackageOutputDir)HomeAssistantPlugin.lplug4" />
+    <Message Importance="high" Text="========================================&#10;" />
+
+  </Target>
+
+  <Target Name="PluginClean" AfterTargets="CoreClean">
+    <Delete Condition="$(OS) == 'Windows_NT'" Files="$(PluginDir)$(ProjectName).link" />
+    <Exec Condition="$(OS) != 'Windows_NT'" Command="rm -f $(PluginDir)$(ProjectName).link" />
+    <RemoveDir Directories="$(OutputPath)..\" />
+  </Target>
+
+</Project>

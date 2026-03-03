@@ -1,0 +1,20 @@
+type: plugin4
+name: HomeAssistantByBatu
+displayName: Home Assistant by Batu
+description: Control your Home Assistant devices from your Loupedeck/Razer Stream Controller.
+version: 1.1.0
+author: Batuhan Sahin
+copyright: Copyright (c) 2026 Batuhan Sahin
+
+pluginFileName: HomeAssistantPlugin.dll
+pluginFolderWin: bin
+
+supportedDevices:
+    - LoupedeckCtFamily
+
+minimumLoupedeckVersion: 6.0
+
+license: MIT
+licenseUrl: https://opensource.org/licenses/MIT
+homePageUrl: https://github.com/Batushn/Loupedeck-HomeAssistant
+supportPageUrl: https://github.com/Batushn/Loupedeck-HomeAssistant/issues
