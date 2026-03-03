@@ -4,7 +4,7 @@
 
 If you discover a security vulnerability in this plugin, please **do not** open a public issue.
 
-Instead, please email **batukeanos@outlook.com** with:
+Instead, please email **hello@batusahin.com** with:
 
 - A description of the vulnerability
 - Steps to reproduce
